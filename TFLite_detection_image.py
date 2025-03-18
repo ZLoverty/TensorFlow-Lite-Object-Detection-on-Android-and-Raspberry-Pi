@@ -141,6 +141,7 @@ interpreter.allocate_tensors()
 # Get model details
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
+print(output_details)
 height = input_details[0]['shape'][1]
 width = input_details[0]['shape'][2]
 
@@ -153,10 +154,9 @@ input_std = 127.5
 # because outputs are ordered differently for TF2 and TF1 models
 outname = output_details[0]['name']
 
-if ('StatefulPartitionedCall' in outname): # This is a TF2 model
-    boxes_idx, classes_idx, scores_idx = 1, 3, 0
-else: # This is a TF1 model
-    boxes_idx, classes_idx, scores_idx = 0, 1, 2
+
+scores_idx, boxes_idx, classes_idx = 1, 3, 0
+
 
 # Loop over every image and perform detection
 for image_path in images:
@@ -178,6 +178,7 @@ for image_path in images:
 
     # Retrieve detection results
     boxes = interpreter.get_tensor(output_details[boxes_idx]['index'])[0] # Bounding box coordinates of detected objects
+    print(classes_idx)
     classes = interpreter.get_tensor(output_details[classes_idx]['index'])[0] # Class index of detected objects
     scores = interpreter.get_tensor(output_details[scores_idx]['index'])[0] # Confidence of detected objects
 
@@ -209,7 +210,7 @@ for image_path in images:
     # All the results have been drawn on the image, now display the image
     if show_results:
         cv2.imshow('Object detector', image)
-        
+        print("show")
         # Press any key to continue to next image, or press 'q' to quit
         if cv2.waitKey(0) == ord('q'):
             break
